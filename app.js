@@ -2,6 +2,8 @@ const api = require('./src/api.js');
 const fastify = require('fastify')({ logger: false });
 const path = require('path');
 
+fastify.register(require('fastify-compress'));
+
 fastify.register(require('fastify-static'), {
     root: path.join(__dirname, 'public'),
     prefix: '/public/'
