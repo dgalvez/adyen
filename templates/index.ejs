@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        <%= title %>
+    </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Currency converter">
+    <link rel="stylesheet" type="text/css" href="/public/css/style.css">
+</head>
+
+<body>
+    <header class="about">
+        <h1 class="about__title">
+            <%= title %>
+        </h1>
+    </header>
+
+    <main id="app">
+        <div class="loader">
+            <div class="loader-line"></div>
+            <div class="loader-line"></div>
+        </div>
+    </main>
+
+    <script src="/public/js/preact.js"></script>
+    <script src="/public/js/app.js"></script>
+    <% if (enableServiceWorker) { %>
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js', { scope: '/' }).then(() => {
+                    console.info('service-worker loaded');
+                }).catch((error) => {
+                    console.error('service-worker could not be loaded', error);
+                });
+            }
+        </script>
+    <% } %>
+</body>
+
+</html>
