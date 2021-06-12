@@ -82,17 +82,15 @@ fastify.route({
         }
     },
     handler: async (request) => {
-        const { from: sourceCurrency, to: targetCurrency, amount } = request.query;
-        if (sourceCurrency === targetCurrency) {
-            return { convertedAmount: parseFloat(amount) };
-        }
 
-        const { rates, error } = await api.fetch(api.endpoint.rates, sourceCurrency, [targetCurrency]);
-        if (error) {
+        const { from: sourceCurrency, to: targetCurrency, amount } = request.query;
+
+        const rate = await api.getConversionRate(sourceCurrency, targetCurrency);
+        if (typeof rate !== 'number') {
             throw new Error(`Could not retrieve rates to convert from ${sourceCurrency} to ${targetCurrency}`);
         }
 
-        return { convertedAmount: parseFloat(amount) * parseFloat(rates[targetCurrency]) };
+        return { convertedAmount: (parseFloat(amount) * rate).toFixed(2) };
     }
 });
 
