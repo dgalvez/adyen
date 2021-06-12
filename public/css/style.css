@@ -61,6 +61,10 @@ html, body {
     padding: 10px;
 }
 
+.convert-form__amount {
+  width: 70px;
+}
+
 .convert-form__converted-amount {
     padding-left: 20px;
 }

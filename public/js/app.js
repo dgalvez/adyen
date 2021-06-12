@@ -6,19 +6,19 @@ function CurrencySelector({ className = '', currencies = [], onChange = () => { 
   return html`
     <select className=${className} onChange=${onChange}>
       ${currencies.map((currency) => {
-    const [code, label] = currency;
-    return html`<option value="${code}">${label ?? code}</option>`;
-  })}
+        const [code, label] = currency;
+        return html`<option value="${code}">${label ?? code}</option>`;
+      })}
     </select>
   `;
 }
 
 class CurrencyConverter extends Component {
+
   constructor(props) {
     super(props);
 
     this.onInputChanged = this.onInputChanged.bind(this);
-    this.onConvertClicked = this.onConvertClicked.bind(this);
 
     this.state = {
       UIReady: false,
@@ -26,7 +26,7 @@ class CurrencyConverter extends Component {
       sourceCurrency: null,
       targetCurrency: null,
       sourceAmount: null,
-      convertedAmount: null,
+      targetAmount: null,
       currencies: [],
       backendError: null
     };
@@ -44,23 +44,37 @@ class CurrencyConverter extends Component {
     });
   }
 
-  async onConvertClicked() {
-    const { convertedAmount } = await this.convert({
-      from: this.state.sourceCurrency,
-      to: this.state.targetCurrency,
-      amount: this.state.sourceAmount
-    });
-    this.setState({ convertedAmount });
-  }
+  onInputChanged(property, isSource) {
+    return ({ currentTarget }) => {
+      const originalInputValue = currentTarget.value;
+      this.setState({ [property]: originalInputValue }, async () => {
+        const {
+          sourceCurrency,
+          targetCurrency,
+          sourceAmount,
+          targetAmount,
+        } = this.state;
 
-  onInputChanged(property) {
-    return ({ currentTarget }) => this.setState({ [property]: currentTarget.value });
+        const { convertedAmount } = await this.convert({
+          from: isSource ? sourceCurrency : targetCurrency,
+          to: isSource ? targetCurrency : sourceCurrency,
+          amount: isSource ? sourceAmount : targetAmount
+        });
+
+        if (originalInputValue === currentTarget.value) {
+          this.setState({
+            [isSource ? 'targetAmount' : 'sourceAmount']: convertedAmount
+          });
+        }
+      });
+    };
   }
 
   render() {
     const {
       UIReady,
-      convertedAmount,
+      sourceAmount,
+      targetAmount,
       currencies,
       backendError
     } = this.state;
@@ -70,23 +84,43 @@ class CurrencyConverter extends Component {
       ${UIReady ?
         html`<div className="convert-form">
           <div className="convert-form__section">
-            <${CurrencySelector} className="convert-form__currency" onChange=${this.onInputChanged('sourceCurrency')} currencies="${currencies}" key="from-selector" />
-            <${CurrencySelector} className="convert-form__currency" onChange=${this.onInputChanged('targetCurrency')} currencies="${currencies}" key="to-selector" />
-          </div>
-          <div className="convert-form__section">
+            <${CurrencySelector} 
+              className="convert-form__currency" 
+              onChange=${this.onInputChanged('sourceCurrency', true)} 
+              currencies="${currencies}" 
+              key="source-selector" 
+            />
             <label>
-              <input className="convert-form__amount" type="number" onChange=${this.onInputChanged('sourceAmount')} key="amount-input" />
-              <span>Amount</span>
+              <input 
+                className="convert-form__amount" 
+                type="number" 
+                value=${sourceAmount}
+                onInput=${this.onInputChanged('sourceAmount', true)} 
+                key="source-amount-input" 
+              />
             </label>
           </div>
           <div className="convert-form__section">
-            <button className="convert-form__submit" onClick=${this.onConvertClicked}>Convert</button>
+            <${CurrencySelector} 
+              className="convert-form__currency" 
+              onChange=${this.onInputChanged('targetCurrency')} 
+              currencies="${currencies}" 
+              key="target-selector" />
+            <label>
+              <input 
+                className="convert-form__amount" 
+                type="number" 
+                value=${targetAmount}
+                onInput=${this.onInputChanged('targetAmount')} 
+                key="target-amount-input" 
+              />
+            </label>
           </div>
           <div className="convert-form__section">
-            ${!!convertedAmount && html`<span className="convert-form__converted-amount">${convertedAmount}</span>`}
             ${!!backendError && html`<span className="convert-form__error-message">${backendError}</span>`}
           </div>
         </div>` :
+
         html`<div className="loader">
               <div className="loader-line"></div>
               <div className="loader-line"></div>
@@ -101,7 +135,6 @@ class CurrencyConverter extends Component {
   }
 
   async convert({ from, to, amount }) {
-    this.setState({ convertedAmount: null });
     return await this.get(`/convert?${new URLSearchParams({ from, to, amount }).toString()}`);
   }
 
