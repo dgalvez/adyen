@@ -1,5 +1,5 @@
 const api = require('./src/api.js');
-const fastify = require('fastify')({ logger: false });
+const fastify = require('fastify')({ logger: true });
 const path = require('path');
 
 fastify.register(require('fastify-compress'));
