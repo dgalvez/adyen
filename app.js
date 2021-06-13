@@ -103,7 +103,7 @@ fastify.route({
 
 (async () => {
     try {
-        await fastify.listen(process.env.APP_PORT || 8080);
+        await fastify.listen(process.env.PORT || process.env.APP_PORT || 8080);
     } catch (err) {
         fastify.log.error(err);
         process.exit(1);
