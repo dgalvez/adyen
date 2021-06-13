@@ -1,10 +1,16 @@
 const fetch = require('node-fetch');
 
+// Normally we would have a common shared config file for this.
 const host = 'http://api.exchangeratesapi.io';
-// This could even better come from a share secrets artifact.
+// This could come even better from a share secrets artifact.
 const key = process.env.RATE_API_SECRET;
 const currencyRestrictedErrorCode = 'base_currency_access_restricted';
 
+/*
+ * This module models the HTTP client in charge of talking to the third party exchange rates api.
+ * A singleton fits well the current usage of this abstraction, since this is a stateless
+ * component with a single main client/use case (the "controller" actions/routes defined in /app.js).
+ */
 const api = {
     endpoint: {
         symbols: () => `${host}/v1/symbols?access_key=${key}`,
@@ -23,6 +29,7 @@ const api = {
         let rateAccesor = (rates) => rates[targetCurrency];
         let response = await api.fetch(api.endpoint.rates, sourceCurrency, [targetCurrency]);
 
+        // Trying to get the inverse conversion rate in case we failed fetching the direct one.
         if (getErrorCode(response) === currencyRestrictedErrorCode) {
             rateCorrector = (rate) => 1 / rate;
             rateAccesor = (rates) => rates[sourceCurrency];

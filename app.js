@@ -15,6 +15,8 @@ fastify.register(require('point-of-view'), {
     }
 });
 
+// The service worker needs to be served from the root path "/"
+// in order to have a global scope
 fastify.get('/service-worker.js', (request, reply) => {
     return reply.sendFile('service-worker.js');
 });
@@ -53,6 +55,11 @@ fastify.route({
     handler: async () => {
         const { symbols: currencies, error } = await api.fetch(api.endpoint.symbols);
         if (error) {
+            // Everything time we can't fetch the desired data we just error out.
+            // The client knows how to handle it.
+            // I haven't configured the right error codes though, to make it semantically
+            // fit, but that's something I would definitely do, since it helps to debug and understand
+            // the specific situation.
             throw new Error('Could not retrieve symbols from the API');
         }
 

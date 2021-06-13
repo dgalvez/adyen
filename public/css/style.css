@@ -15,39 +15,76 @@ html, body {
 }
 
 .loader {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.loader-small {
+    width: 20px;
+    height: 20px;
 }
 
 .loader .loader-line {
-  position: absolute;
-  border: 4px solid #000;
-  opacity: 1;
-  border-radius: 50%;
-  animation: loader 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    position: absolute;
+    border: 4px solid #000;
+    opacity: 1;
+    border-radius: 50%;
+    animation: loader 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.loader-small .loader-line {
+    border: 2px solid #000;
+    animation: loader-small 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
 .loader .loader-line:nth-child(2) {
-  animation-delay: -0.5s;
+    animation-delay: -0.5s;
 }
 
 @keyframes loader {
-  0% {
-    top: 36px;
-    left: 36px;
-    width: 0;
-    height: 0;
-    opacity: 1;
-  }
-  100% {
-    top: 0px;
-    left: 0px;
-    width: 72px;
-    height: 72px;
-    opacity: 0;
-  }
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+    }
+}
+
+@keyframes loader-small {
+    0% {
+        top: 9px;
+        left: 9px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        top: 0px;
+        left: 0px;
+        width: 18px;
+        height: 18px;
+        opacity: 0;
+    }
+}
+
+.convert-form {
+    position: relative;
+}
+
+.convert-form .loader {
+    position: absolute;
+    left: 10px;
+    bottom: -15px;
 }
 
 .convert-form__section {
@@ -62,7 +99,7 @@ html, body {
 }
 
 .convert-form__amount {
-  width: 70px;
+    width: 70px;
 }
 
 .convert-form__converted-amount {

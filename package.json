@@ -16,5 +16,9 @@
     "fastify-static": "^4.2.2",
     "node-fetch": "^2.6.1",
     "point-of-view": "^4.14.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-plugin-react": "^7.24.0"
   }
 }
